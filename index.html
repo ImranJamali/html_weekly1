@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTML Paper — 100 Questions, 30 Minutes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* ---------- tokens ---------- */
+:root{
+  --ink:#171628;
+  --ink-2:#565273;
+  --ink-3:#8a86a6;
+  --paper:#f1f0f7;
+  --card:#ffffff;
+  --rule:#dcd9ea;
+  --tag:#c81d77;      /* syntax: tag name — primary accent */
+  --attr:#a6640b;     /* syntax: attribute */
+  --string:#0a7b6d;   /* syntax: string — also "correct" */
+  --wrong:#c22e2e;
+  --shadow:0 1px 2px rgba(23,22,40,.06), 0 8px 24px -12px rgba(23,22,40,.25);
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,sans-serif;
+  --disp:"Space Grotesk","IBM Plex Sans",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.55;
+  -webkit-text-size-adjust:100%;
+}
+:focus-visible{outline:3px solid var(--tag);outline-offset:2px;border-radius:4px}
+.wrap{max-width:880px;margin:0 auto;padding:0 20px}
+
+/* ---------- syntax colouring ---------- */
+.p{color:var(--ink-3)}
+.t{color:var(--tag)}
+.a{color:var(--attr)}
+.s{color:var(--string)}
+
+/* ---------- top bar ---------- */
+.bar{
+  position:sticky;top:0;z-index:20;
+  background:rgba(241,240,247,.92);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--rule);
+}
+.bar-in{
+  max-width:880px;margin:0 auto;padding:10px 20px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+}
+.mark{font-family:var(--mono);font-size:.82rem;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.clock{
+  font-family:var(--mono);font-size:.95rem;font-weight:600;
+  margin-left:auto;white-space:nowrap;
+  padding:4px 10px;border:1px solid var(--rule);border-radius:999px;background:var(--card);
+}
+.clock .s{font-variant-numeric:tabular-nums}
+.clock.warn .s{color:var(--attr)}
+.clock.crit{border-color:var(--wrong)}
+.clock.crit .s{color:var(--wrong)}
+.caret{display:inline-block;width:.5ch;margin-left:1px;background:var(--tag);color:transparent;animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.tally{font-family:var(--mono);font-size:.78rem;color:var(--ink-2);white-space:nowrap}
+.rail{flex:1 0 100%;height:3px;background:var(--rule);border-radius:2px;overflow:hidden}
+.rail i{display:block;height:100%;width:0;background:var(--tag);transition:width .25s ease}
+
+/* ---------- buttons ---------- */
+.btn{
+  font:600 .92rem/1 var(--sans);
+  padding:11px 18px;border-radius:8px;border:1px solid var(--ink);
+  background:var(--ink);color:#fff;cursor:pointer;
+  transition:transform .12s ease, background .15s ease, color .15s ease;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--rule)}
+.btn.ghost:hover{border-color:var(--ink)}
+.btn.hot{background:var(--tag);border-color:var(--tag)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn.sm{padding:8px 13px;font-size:.84rem}
+
+/* ---------- start screen ---------- */
+.start{padding:56px 0 80px}
+.eyebrow{font-family:var(--mono);font-size:.8rem;color:var(--ink-3);margin:0 0 18px}
+.spec{
+  background:var(--card);border:1px solid var(--rule);border-radius:14px;
+  box-shadow:var(--shadow);
+  padding:26px 24px;overflow-x:auto;
+  font-family:var(--mono);font-size:clamp(.86rem,2.6vw,1.08rem);line-height:1.85;
+}
+.spec b{font-weight:600}
+.spec .ind{padding-left:2ch;display:block}
+h1{font-family:var(--disp);font-weight:700;font-size:clamp(2rem,6vw,3rem);line-height:1.05;letter-spacing:-.02em;margin:34px 0 10px}
+.lede{color:var(--ink-2);max-width:56ch;margin:0 0 26px}
+.rules{list-style:none;padding:0;margin:0 0 30px;max-width:60ch}
+.rules li{position:relative;padding-left:26px;margin:9px 0;color:var(--ink-2);font-size:.95rem}
+.rules li::before{content:"›";position:absolute;left:8px;top:-1px;color:var(--tag);font-family:var(--mono);font-weight:600}
+.setup{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:22px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-family:var(--mono);font-size:.74rem;color:var(--ink-2)}
+.field input[type=text]{
+  font:400 .95rem var(--sans);padding:10px 12px;border:1px solid var(--rule);
+  border-radius:8px;background:var(--card);color:var(--ink);min-width:220px;
+}
+.check{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--ink-2);align-self:flex-end;padding-bottom:10px}
+
+/* ---------- question card ---------- */
+.exam{padding:26px 0 120px}
+.qcard{
+  background:var(--card);border:1px solid var(--rule);border-radius:14px;
+  box-shadow:var(--shadow);display:flex;overflow:hidden;
+}
+.gutter{
+  flex:0 0 66px;border-right:1px solid var(--rule);background:#faf9fd;
+  display:flex;flex-direction:column;align-items:center;padding:22px 0;gap:6px;
+}
+.gutter .n{font-family:var(--mono);font-size:1.5rem;font-weight:600;color:var(--ink)}
+.gutter .of{font-family:var(--mono);font-size:.68rem;color:var(--ink-3)}
+.flagbtn{
+  margin-top:auto;border:1px solid var(--rule);background:var(--card);border-radius:8px;
+  width:34px;height:34px;cursor:pointer;font-size:.9rem;line-height:1;color:var(--ink-3);
+}
+.flagbtn[aria-pressed=true]{border-color:var(--attr);color:var(--attr);background:#fdf6ea}
+.qbody{flex:1;padding:22px 24px 24px;min-width:0}
+.level{font-family:var(--mono);font-size:.74rem;margin:0 0 12px}
+.qtext{font-family:var(--disp);font-weight:500;font-size:clamp(1.08rem,3.4vw,1.3rem);line-height:1.35;margin:0 0 20px;letter-spacing:-.01em}
+.opts{display:grid;gap:9px;margin:0;padding:0;border:0}
+.opt{
+  display:flex;gap:12px;align-items:flex-start;
+  border:1px solid var(--rule);border-radius:10px;padding:12px 14px;
+  cursor:pointer;background:var(--card);transition:border-color .14s ease,background .14s ease;
+}
+.opt:hover{border-color:var(--ink-3)}
+.opt input{position:absolute;opacity:0;width:0;height:0}
+.opt .key{
+  font-family:var(--mono);font-size:.76rem;font-weight:600;color:var(--ink-2);
+  border:1px solid var(--rule);border-radius:6px;
+  width:24px;height:24px;display:grid;place-items:center;flex:0 0 24px;
+}
+.opt .txt{font-size:.97rem}
+.opt .txt code{font-family:var(--mono);font-size:.93em;background:#f5f3fa;padding:1px 5px;border-radius:4px}
+.opt.on{border-color:var(--tag);background:#fdf2f8}
+.opt.on .key{background:var(--tag);border-color:var(--tag);color:#fff}
+.opt input:focus-visible + .key{outline:3px solid var(--tag);outline-offset:2px}
+.nav{display:flex;gap:10px;align-items:center;margin-top:22px;flex-wrap:wrap}
+.hint{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);margin-left:auto}
+
+/* ---------- palette ---------- */
+.palette{margin-top:22px;background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:16px 18px}
+.palette summary{
+  cursor:pointer;font-family:var(--mono);font-size:.8rem;color:var(--ink-2);
+  list-style:none;display:flex;gap:10px;align-items:center;
+}
+.palette summary::-webkit-details-marker{display:none}
+.palette summary::before{content:"▸";color:var(--tag)}
+.palette[open] summary::before{content:"▾"}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:6px;margin-top:14px}
+.cell{
+  font-family:var(--mono);font-size:.76rem;padding:7px 0;border-radius:7px;cursor:pointer;
+  border:1px solid var(--rule);background:var(--card);color:var(--ink-2);
+}
+.cell.done{background:var(--ink);border-color:var(--ink);color:#fff}
+.cell.flag{border-color:var(--attr);color:var(--attr)}
+.cell.done.flag{background:var(--attr);border-color:var(--attr);color:#fff}
+.cell.here{box-shadow:0 0 0 2px var(--tag)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;font-family:var(--mono);font-size:.7rem;color:var(--ink-3)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;border:1px solid var(--rule)}
+.legend .d{background:var(--ink);border-color:var(--ink)}
+.legend .f{background:#fff;border-color:var(--attr)}
+
+/* ---------- modal ---------- */
+.modal{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:rgba(23,22,40,.5);padding:20px}
+.sheet{background:var(--card);border-radius:14px;padding:26px;max-width:420px;width:100%;box-shadow:var(--shadow)}
+.sheet h3{font-family:var(--disp);margin:0 0 8px;font-size:1.3rem}
+.sheet p{color:var(--ink-2);font-size:.94rem;margin:0 0 20px}
+.sheet .row{display:flex;gap:10px;justify-content:flex-end}
+
+/* ---------- result ---------- */
+.result{padding:34px 0 90px}
+.scorecard{background:var(--card);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:28px 26px;margin-bottom:14px}
+.verdict{font-family:var(--mono);font-size:.8rem;display:inline-block;padding:5px 12px;border-radius:999px;margin-bottom:16px}
+.verdict.pass{background:#e6f5f2;color:var(--string);border:1px solid #b3e0d8}
+.verdict.fail{background:#fdeceb;color:var(--wrong);border:1px solid #f2c4c1}
+.big{font-family:var(--disp);font-weight:700;font-size:clamp(2.6rem,10vw,4.4rem);line-height:1;letter-spacing:-.03em;margin:0}
+.big small{font-size:.34em;font-weight:500;color:var(--ink-3);letter-spacing:0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:2px;margin-top:24px;background:var(--rule);border:1px solid var(--rule);border-radius:10px;overflow:hidden}
+.stat{background:var(--card);padding:14px 16px}
+.stat b{display:block;font-family:var(--mono);font-size:1.15rem;font-weight:600}
+.stat span{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
+.notice{font-family:var(--mono);font-size:.8rem;color:var(--attr);margin:0 0 18px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:26px 0 16px}
+.chip{
+  font:600 .8rem var(--mono);padding:7px 13px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--rule);background:var(--card);color:var(--ink-2);
+}
+.chip[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff}
+.rev{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:18px 20px;margin-bottom:10px}
+.rev .head{display:flex;gap:10px;align-items:baseline;margin-bottom:8px}
+.rev .num{font-family:var(--mono);font-size:.78rem;color:var(--ink-3);flex:0 0 auto}
+.rev .badge{font-family:var(--mono);font-size:.7rem;padding:2px 8px;border-radius:999px;margin-left:auto;flex:0 0 auto}
+.rev .badge.ok{background:#e6f5f2;color:var(--string)}
+.rev .badge.no{background:#fdeceb;color:var(--wrong)}
+.rev .badge.skip{background:#f3f2f8;color:var(--ink-3)}
+.rev .q{font-family:var(--disp);font-weight:500;font-size:1.02rem;margin:0}
+.rev ul{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:6px}
+.rev li{font-size:.93rem;padding:8px 12px;border-radius:8px;border:1px solid transparent;display:flex;gap:9px}
+.rev li .mk{font-family:var(--mono);font-size:.8rem;flex:0 0 1.6ch}
+.rev li code{font-family:var(--mono);font-size:.9em;background:#f5f3fa;padding:1px 5px;border-radius:4px}
+.rev li.right{background:#e9f6f3;border-color:#bde3db;color:#0a5f55}
+.rev li.chosen{background:#fdeceb;border-color:#f2c4c1;color:#8f2020}
+.why{font-size:.86rem;color:var(--ink-2);margin:12px 0 0;padding-left:12px;border-left:2px solid var(--rule)}
+.foot{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap}
+
+@media (max-width:560px){
+  .gutter{flex:0 0 52px}
+  .gutter .n{font-size:1.2rem}
+  .qbody{padding:18px 16px 20px}
+  .hint{display:none}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(34px,1fr))}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important}
+}
+</style>
+</head>
+<body>
+
+<header class="bar" id="bar" hidden>
+  <div class="bar-in">
+    <span class="mark"><span class="p">&lt;</span><span class="t">html</span><span class="p">&gt;</span> paper</span>
+    <span class="tally" id="tally">0 answered</span>
+    <span class="clock" id="clock">
+      <span class="p">&lt;</span><span class="t">time</span> <span class="a">left</span><span class="p">=</span><span class="s" id="clockVal">"30:00"</span><span class="p">&gt;</span><span class="caret">▍</span>
+    </span>
+    <button class="btn hot sm" id="btnSubmitTop">Submit paper</button>
+    <div class="rail"><i id="rail"></i></div>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ START ============ -->
+<section class="screen wrap start" id="screenStart">
+  <p class="eyebrow">&lt;!-- practice paper · web development --&gt;</p>
+
+  <div class="spec">
+<span class="p">&lt;</span><span class="t">exam</span> <span class="a">subject</span><span class="p">=</span><span class="s">"HTML"</span>
+<span class="ind"><span class="a">questions</span><span class="p">=</span><span class="s">"100"</span></span>
+<span class="ind"><span class="a">marks-per-question</span><span class="p">=</span><span class="s">"1"</span></span>
+<span class="ind"><span class="a">pass-mark</span><span class="p">=</span><span class="s">"40"</span></span>
+<span class="ind"><span class="a">duration</span><span class="p">=</span><span class="s">"30 minutes"</span></span>
+<span class="ind"><span class="a">difficulty</span><span class="p">=</span><span class="s">"easy → hard"</span><span class="p">&gt;</span></span>
+<span class="p">&lt;/</span><span class="t">exam</span><span class="p">&gt;</span>
+  </div>
+
+  <h1>One hundred questions.<br>Thirty minutes.</h1>
+  <p class="lede">A full HTML paper that runs in the browser. Every question carries one mark, the clock starts the moment you begin, and the paper is collected automatically when it reaches zero.</p>
+
+  <ul class="rules">
+    <li>Questions run from beginner tags to attributes most people never touch.</li>
+    <li>Score 40 or more to pass. Below 40 is a fail.</li>
+    <li>You can move freely between questions and change any answer before submitting.</li>
+    <li>Flag a question to come back to it — flagged numbers stay marked in the grid.</li>
+    <li>Correct answers stay hidden until you submit or the time runs out.</li>
+  </ul>
+
+  <div class="setup">
+    <div class="field">
+      <label for="who">Your name (optional)</label>
+      <input type="text" id="who" placeholder="e.g. Ayesha Khan" autocomplete="name">
+    </div>
+    <label class="check"><input type="checkbox" id="shuffle"> Shuffle the question order</label>
+  </div>
+
+  <button class="btn hot" id="btnStart">Start the exam</button>
+</section>
+
+<!-- ============ EXAM ============ -->
+<section class="screen wrap exam" id="screenExam" hidden>
+  <div class="qcard">
+    <div class="gutter">
+      <span class="n" id="qNum">1</span>
+      <span class="of">/100</span>
+      <button class="flagbtn" id="btnFlag" aria-pressed="false" title="Flag for review (F)">⚑</button>
+    </div>
+    <div class="qbody">
+      <p class="level" id="qLevel"></p>
+      <h2 class="qtext" id="qText"></h2>
+      <fieldset class="opts" id="qOpts"></fieldset>
+      <div class="nav">
+        <button class="btn ghost sm" id="btnPrev">← Previous</button>
+        <button class="btn sm" id="btnNext">Next →</button>
+        <span class="hint">keys: A–D answer · ←/→ move · F flag</span>
+      </div>
+    </div>
+  </div>
+
+  <details class="palette" id="palette" open>
+    <summary>All 100 questions</summary>
+    <div class="grid" id="grid"></div>
+    <div class="legend">
+      <span><i class="d"></i>answered</span>
+      <span><i></i>not answered</span>
+      <span><i class="f"></i>flagged</span>
+    </div>
+  </details>
+</section>
+
+<!-- ============ RESULT ============ -->
+<section class="screen wrap result" id="screenResult" hidden>
+  <p class="notice" id="autoNote" hidden>&lt;!-- time expired · the paper was submitted automatically --&gt;</p>
+  <div class="scorecard">
+    <span class="verdict" id="verdict"></span>
+    <p class="big"><span id="score">0</span><small> / 100 marks</small></p>
+    <p class="lede" id="resultLine" style="margin:12px 0 0"></p>
+    <div class="stats">
+      <div class="stat"><b id="sCorrect">0</b><span>correct</span></div>
+      <div class="stat"><b id="sWrong">0</b><span>wrong</span></div>
+      <div class="stat"><b id="sSkip">0</b><span>not attempted</span></div>
+      <div class="stat"><b id="sPct">0%</b><span>percentage</span></div>
+      <div class="stat"><b id="sTime">00:00</b><span>time used</span></div>
+    </div>
+  </div>
+
+  <div class="filters" id="filters">
+    <button class="chip" data-f="all" aria-pressed="true">All 100</button>
+    <button class="chip" data-f="wrong" aria-pressed="false">Wrong only</button>
+    <button class="chip" data-f="skip" aria-pressed="false">Not attempted</button>
+    <button class="chip" data-f="right" aria-pressed="false">Correct only</button>
+  </div>
+
+  <div id="review"></div>
+
+  <div class="foot">
+    <button class="btn hot" id="btnRetake">Retake the exam</button>
+    <button class="btn ghost" id="btnTop">Back to top</button>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ CONFIRM ============ -->
+<div class="modal" id="modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <h3 id="modalTitle">Submit the paper?</h3>
+    <p id="modalBody"></p>
+    <div class="row">
+      <button class="btn ghost" id="btnCancel">Keep working</button>
+      <button class="btn hot" id="btnConfirm">Submit and see answers</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ================= QUESTION BANK =================
+   [ question, [four options], index of correct option, short explanation ] */
+const QUESTIONS = [
+/* ---- EASY : 1–34 ---- */
+["What does HTML stand for?", ["Hyper Trainer Marking Language", "Hyperlinking Textual Mark Language", "High Level Text Machine Language", "HyperText Markup Language"], 3, "HTML is short for HyperText Markup Language — text linked to other text, described with markup."],
+["Which tag creates the largest heading on a page?", ["`<h6>`", "`<head>`", "`<h1>`", "`<heading>`"], 2, "Headings run from `<h1>` (largest) down to `<h6>` (smallest)."],
+["Which element defines a paragraph of text?", ["`<para>`", "`<p>`", "`<pg>`", "`<text>`"], 1, "`<p>` is the paragraph element. Browsers add space above and below it by default."],
+["Which tag forces a single line break?", ["`<br>`", "`<break>`", "`<lb>`", "`<newline>`"], 0, "`<br>` breaks the line. It is a void element, so it never gets a closing tag."],
+["Which tag creates a hyperlink?", ["`<a>`", "`<link>`", "`<href>`", "`<hyper>`"], 0, "`<a>` is the anchor element. `<link>` is only used in the head for external resources."],
+["Which attribute holds the address a link points to?", ["src", "href", "action", "target"], 1, "href stands for hypertext reference — the destination of the link."],
+["Which tag places an image on the page?", ["`<image>`", "`<picture>`", "`<img>`", "`<src>`"], 2, "`<img>` inserts the image. `<picture>` only wraps several sources around an `<img>`."],
+["Which attribute gives the file path of an image?", ["href", "path", "link", "src"], 3, "src (source) points to the image file; href is for links."],
+["Which attribute describes an image for screen readers and broken images?", ["title", "alt", "caption", "desc"], 1, "alt text is read aloud by screen readers and shown if the image fails to load."],
+["Where does information about the page go — things the visitor does not see?", ["`<head>`", "`<body>`", "`<meta>`", "`<top>`"], 0, "`<head>` holds metadata: title, character set, stylesheets, scripts."],
+["Which element holds everything the visitor actually sees?", ["`<main>`", "`<page>`", "`<content>`", "`<body>`"], 3, "`<body>` contains all visible content of the document."],
+["Which tag sets the text shown on the browser tab?", ["`<h1>`", "`<name>`", "`<title>`", "`<caption>`"], 2, "`<title>` sits inside `<head>` and names the document in the tab, bookmarks and search results."],
+["Which tag starts a bulleted list?", ["`<ul>`", "`<list>`", "`<ol>`", "`<bl>`"], 0, "`<ul>` is an unordered list — bullets, no numbering."],
+["Which tag starts a numbered list?", ["`<num>`", "`<ul>`", "`<nl>`", "`<ol>`"], 3, "`<ol>` is an ordered list, so the browser numbers each item."],
+["Which tag defines one item inside a list?", ["`<item>`", "`<li>`", "`<dt>`", "`<lt>`"], 1, "`<li>` is a list item and belongs inside `<ul>`, `<ol>` or `<menu>`."],
+["Which is the correct doctype for an HTML5 page?", ["`<!DOCTYPE HTML PUBLIC>`", "`<doctype html5>`", "`<!DOCTYPE html>`", "`<html5>`"], 2, "HTML5 simplified the doctype to a single short line placed above `<html>`."],
+["How do you write a comment in HTML?", ["// comment", "/* comment */", "`<!-- comment -->`", "# comment"], 2, "Anything between `<!--` and `-->` is ignored by the browser."],
+["Which tag draws a horizontal line marking a change of topic?", ["`<line>`", "`<break>`", "`<rule>`", "`<hr>`"], 3, "`<hr>` is a thematic break, drawn as a horizontal rule."],
+["Which tag marks text as important — bold by default?", ["`<strong>`", "`<bold>`", "`<b>`", "`<imp>`"], 0, "`<strong>` carries meaning (importance). `<b>` only styles text bold without meaning."],
+["Which tag marks emphasised text — italic by default?", ["`<i>`", "`<em>`", "`<italic>`", "`<stress>`"], 1, "`<em>` means emphasis and is read with stress by screen readers."],
+["Which attribute must have a different value on every element in a page?", ["class", "name", "key", "id"], 3, "id must be unique in the document; class can be repeated freely."],
+["Which attribute is meant to be shared by many elements so one CSS rule can style them all?", ["class", "id", "group", "style"], 0, "class groups elements together so a single rule can target all of them."],
+["Which tag defines a row inside a table?", ["`<td>`", "`<tr>`", "`<th>`", "`<row>`"], 1, "`<tr>` is a table row and holds the cells."],
+["Which tag defines an ordinary data cell?", ["`<tc>`", "`<tr>`", "`<td>`", "`<cell>`"], 2, "`<td>` is table data — one ordinary cell."],
+["Which tag defines a heading cell in a table — bold and centred by default?", ["`<th>`", "`<thead>`", "`<td>`", "`<hd>`"], 0, "`<th>` is a table header cell and also tells assistive tech what the column or row means."],
+["Which tag creates a form?", ["`<input>`", "`<form>`", "`<fieldset>`", "`<submit>`"], 1, "`<form>` wraps the controls and defines where and how the data is sent."],
+["Which tag creates a single-line text box?", ["`<textbox>`", "`<textarea>`", "`<input>`", "`<field>`"], 2, "`<input>` covers most controls; its type attribute decides which one you get."],
+["Which input type hides the characters as they are typed?", ["type='hidden'", "type='secret'", "type='private'", "type='password'"], 3, "type='password' masks the characters on screen — it does not encrypt them."],
+["Which input type lets a user tick several options at once?", ["radio", "select", "checkbox", "multi"], 2, "Checkboxes are independent, so any number of them can be ticked."],
+["Which input type lets a user pick only one option from a group?", ["radio", "choice", "checkbox", "one"], 0, "Radio buttons that share the same name attribute allow only one selection."],
+["Which tag creates a drop-down list?", ["`<dropdown>`", "`<options>`", "`<list>`", "`<select>`"], 3, "`<select>` is the drop-down; each choice inside it is an `<option>`."],
+["Which tag defines one choice inside a drop-down?", ["`<opt>`", "`<option>`", "`<li>`", "`<item>`"], 1, "`<option>` sits inside `<select>` or `<datalist>`."],
+["Which tag creates a text box for several lines of writing?", ["`<input type='multiline'>`", "`<textarea>`", "`<longtext>`", "`<textbox>`"], 1, "`<textarea>` accepts multi-line text; its value goes between the opening and closing tags."],
+["Which value of the target attribute opens a link in a new tab?", ["_new", "_tab", "_blank", "_open"], 2, "target='_blank' opens the link in a new browsing context."],
+
+/* ---- MEDIUM : 35–70 ---- */
+["Which tag connects an external CSS file to the page?", ["`<link>`", "`<css>`", "`<style>`", "`<script>`"], 0, "`<link rel='stylesheet' href='style.css'>` goes in the head."],
+["Which tag holds CSS written inside the HTML file itself?", ["`<css>`", "`<script>`", "`<link>`", "`<style>`"], 3, "`<style>` contains internal CSS, usually in the head."],
+["Which tag adds JavaScript to a page?", ["`<js>`", "`<javascript>`", "`<script>`", "`<code>`"], 2, "`<script>` either holds code directly or loads a file through its src attribute."],
+["Which attribute shows extra text when the pointer rests on an element?", ["alt", "tip", "hover", "title"], 3, "title produces the browser tooltip. alt is a text replacement, not a tooltip."],
+["Which element groups the header rows of a table?", ["`<th>`", "`<thead>`", "`<header>`", "`<caption>`"], 1, "`<thead>` groups header rows; `<tbody>` and `<tfoot>` group the rest."],
+["Which attribute makes one cell stretch across several columns?", ["colspan", "span", "width", "merge"], 0, "colspan='3' makes the cell as wide as three normal cells."],
+["Which attribute makes one cell stretch down over several rows?", ["spanrow", "rowspan", "height", "down"], 1, "rowspan='2' makes the cell cover two rows."],
+["Which element gives a table its visible caption?", ["`<caption>`", "`<legend>`", "`<title>`", "`<label>`"], 0, "`<caption>` must be the first child of `<table>`."],
+["Which HTML5 element wraps a block of navigation links?", ["`<menu>`", "`<navbar>`", "`<links>`", "`<nav>`"], 3, "`<nav>` marks major navigation blocks so assistive tech can jump straight to them."],
+["Which element holds content that would still make sense published on its own, like a blog post?", ["`<section>`", "`<div>`", "`<article>`", "`<post>`"], 2, "`<article>` is for self-contained, independently distributable content."],
+["Which element groups related content that usually carries its own heading?", ["`<div>`", "`<section>`", "`<group>`", "`<part>`"], 1, "`<section>` is a thematic grouping; use `<div>` when there is no thematic meaning."],
+["Which element marks content that is only indirectly related, such as a sidebar?", ["`<side>`", "`<extra>`", "`<aside>`", "`<footer>`"], 2, "`<aside>` is for tangential content like sidebars, pull quotes or related links."],
+["Which element holds the dominant content of the document and should appear only once?", ["`<body>`", "`<primary>`", "`<content>`", "`<main>`"], 3, "`<main>` marks the central content, skipping headers, navs and footers."],
+["Which element groups an image together with its caption?", ["`<figure>`", "`<picture>`", "`<image>`", "`<media>`"], 0, "`<figure>` wraps self-contained media; `<figcaption>` supplies its caption."],
+["Which element supplies the caption text for a figure?", ["`<caption>`", "`<figcaption>`", "`<label>`", "`<legend>`"], 1, "`<figcaption>` must be the first or last child of `<figure>`."],
+["Which attribute stops a form from submitting while a field is still empty?", ["required", "validate", "mandatory", "needed"], 0, "required triggers the browser's built-in validation before the form is sent."],
+["Which attribute shows faint hint text inside an empty input?", ["hint", "value", "default", "placeholder"], 3, "placeholder is a hint only — it disappears on typing and is not a substitute for a label."],
+["Which input type makes the browser check that the value looks like an email address?", ["type='mail'", "type='text'", "type='email'", "type='address'"], 2, "type='email' triggers format validation and a suitable keyboard on phones."],
+["Which input type opens a date picker?", ["type='calendar'", "type='date'", "type='day'", "type='datetime'"], 1, "type='date' gives a native date picker and a value in YYYY-MM-DD form."],
+["Which input type shows a slider the user can drag?", ["type='slider'", "type='scale'", "type='number'", "type='range'"], 3, "type='range' produces a slider controlled by min, max and step."],
+["Which input type opens a colour picker?", ["type='colour'", "type='paint'", "type='color'", "type='swatch'"], 2, "type='color' returns a hex value such as #ff0000."],
+["Which attribute on a `<label>` connects it to its input?", ["for", "id", "name", "link"], 0, "The label's for value must match the input's id — then clicking the label focuses the input."],
+["Which element draws a group box around related form controls?", ["`<group>`", "`<fieldset>`", "`<section>`", "`<box>`"], 1, "`<fieldset>` groups related controls, which also helps screen reader users."],
+["Which element supplies the title of a fieldset?", ["`<legend>`", "`<title>`", "`<label>`", "`<caption>`"], 0, "`<legend>` must be the first child of `<fieldset>`."],
+["Which attribute states the address where form data is sent?", ["method", "send", "action", "target"], 2, "action holds the URL that receives the submitted data."],
+["Which form method attaches the data to the URL as a query string?", ["post", "send", "put", "get"], 3, "GET puts values in the URL, so it is fine for searches but not for secrets."],
+["Which method should carry a password or any sensitive field?", ["post", "get", "head", "link"], 0, "POST places data in the request body instead of the visible URL."],
+["Which tag embeds another web page inside the current one?", ["`<embed>`", "`<iframe>`", "`<frame>`", "`<window>`"], 1, "`<iframe>` creates a nested browsing context, used for maps, videos and widgets."],
+["Which tag plays video without a plugin?", ["`<movie>`", "`<media>`", "`<video>`", "`<embed>`"], 2, "`<video>` is the native HTML5 video player."],
+["Which tag plays sound without a plugin?", ["`<sound>`", "`<play>`", "`<music>`", "`<audio>`"], 3, "`<audio>` is the native HTML5 sound player."],
+["Which attribute puts play, pause and volume buttons on a video?", ["player", "buttons", "controls", "ui"], 2, "Without controls the media has no visible interface at all."],
+["Which element offers a video or audio player several file formats to choose from?", ["`<source>`", "`<file>`", "`<src>`", "`<track>`"], 0, "Several `<source>` elements let the browser pick the first format it supports."],
+["Which element is a blank drawing surface that JavaScript paints on?", ["`<draw>`", "`<canvas>`", "`<paint>`", "`<graphic>`"], 1, "`<canvas>` is a bitmap surface scripted through its 2D or WebGL context."],
+["Which meta tag sets the character encoding of the document?", ["`<meta lang='UTF-8'>`", "`<meta encoding='UTF-8'>`", "`<meta type='UTF-8'>`", "`<meta charset='UTF-8'>`"], 3, "It should be the first thing in `<head>` so the browser decodes the file correctly."],
+["Which meta tag makes a page scale properly on phones?", ["`<meta name='mobile'>`", "`<meta name='screen'>`", "`<meta name='responsive'>`", "`<meta name='viewport'>`"], 3, "The viewport meta tag with width=device-width is the base of responsive design."],
+["Which tag displays text exactly as written, keeping every space and line break?", ["`<code>`", "`<pre>`", "`<raw>`", "`<text>`"], 1, "`<pre>` is preformatted text — whitespace is preserved and a monospace font is used."],
+
+/* ---- HARD : 71–100 ---- */
+["Which tag marks a fragment of computer code inside a sentence?", ["`<pre>`", "`<samp>`", "`<code>`", "`<var>`"], 2, "`<code>` marks code; wrap it in `<pre>` when the layout also matters."],
+["Which tag represents keys the user should press on the keyboard?", ["`<kbd>`", "`<key>`", "`<input>`", "`<press>`"], 0, "`<kbd>` means keyboard input, such as Ctrl + S."],
+["What does a data-* attribute let you do?", ["Connect to a database", "Store custom values on an element for scripts to read", "Validate a form field", "Cache the page offline"], 1, "data-id='7' is read in JavaScript through element.dataset.id."],
+["Which attribute leaves a field visible and submitted, but not editable?", ["disabled", "locked", "fixed", "readonly"], 3, "readonly blocks editing yet still sends the value with the form."],
+["Which attribute makes a control unusable AND leaves its value out of the submitted data?", ["readonly", "hidden", "disabled", "off"], 2, "Disabled controls are skipped entirely when the form is submitted."],
+["Which script attribute downloads the file alongside parsing and runs it only after the HTML is parsed?", ["defer", "async", "wait", "onload"], 0, "defer keeps scripts in order and runs them just before DOMContentLoaded."],
+["Which script attribute runs the file the moment it finishes downloading, possibly interrupting parsing?", ["live", "defer", "instant", "async"], 3, "async gives no guarantee of order, so it suits independent scripts like analytics."],
+["Which global attribute lets a visitor type directly into any element?", ["editable", "contenteditable", "writable", "input"], 1, "contenteditable='true' turns an ordinary element into an editing surface."],
+["Which global attribute changes the order in which elements receive keyboard focus?", ["tabindex", "taborder", "focus", "order"], 0, "tabindex sets focus order; values above 0 are best avoided as they break natural order."],
+["Which element offers suggested values to a text input while still allowing free typing?", ["`<select>`", "`<suggest>`", "`<datalist>`", "`<options>`"], 2, "`<datalist>` gives autocomplete suggestions without limiting the answer to that list."],
+["Which attribute joins an `<input>` to its `<datalist>`?", ["list", "for", "data", "source"], 0, "The input's list value must match the datalist's id."],
+["Which element shows how much of a task has been completed?", ["`<meter>`", "`<progress>`", "`<bar>`", "`<range>`"], 1, "`<progress>` is for task completion, such as a file upload."],
+["Which element shows a measurement inside a known range, such as disk space used?", ["`<progress>`", "`<gauge>`", "`<meter>`", "`<scale>`"], 2, "`<meter>` is a gauge for a static measurement, not progress toward a goal."],
+["Which element creates a panel the visitor can open and close, with no JavaScript?", ["`<toggle>`", "`<accordion>`", "`<expand>`", "`<details>`"], 3, "`<details>` is a native disclosure widget; adding the open attribute starts it expanded."],
+["Which element supplies the always-visible heading of a `<details>` panel?", ["`<title>`", "`<legend>`", "`<caption>`", "`<summary>`"], 3, "`<summary>` is the clickable label and must be the first child."],
+["Which attribute lets one `<img>` offer several files so the browser can pick by screen width?", ["sources", "multisrc", "srcset", "resize"], 2, "srcset lists candidates with width descriptors; sizes tells the browser how wide the image will display."],
+["Which img attribute tells the browser to fetch off-screen images only when they are needed?", ["loading='lazy'", "defer='true'", "async='true'", "preload='none'"], 0, "loading='lazy' delays images below the fold and speeds up first paint."],
+["Which attribute on `<a>` makes the browser save the target file instead of opening it?", ["save", "download", "file", "get"], 1, "download also lets you suggest a filename: download='report.pdf'."],
+["Which rel value stops a newly opened tab from reaching back through window.opener?", ["noopener", "noreferrer only", "nofollow", "external"], 0, "rel='noopener' closes a known security hole with target='_blank'."],
+["Which element sets a base URL that every relative link on the page is resolved against?", ["`<root>`", "`<base>`", "`<origin>`", "`<link>`"], 1, "`<base href='...'>` goes in the head and affects all relative URLs."],
+["Which element holds markup that the browser parses but does not render until a script clones it?", ["`<hidden>`", "`<slot>`", "`<template>`", "`<draft>`"], 2, "`<template>` content stays inert — no images load and no scripts run until it is used."],
+["Which attribute restricts what an embedded `<iframe>` is allowed to do?", ["restrict", "secure", "safe", "sandbox"], 3, "sandbox removes privileges such as scripts, forms and popups unless you add them back."],
+["Which attribute lets an input that sits outside a `<form>` still be submitted with it?", ["formid", "form", "owner", "belongs"], 1, "Set the input's form attribute to the form's id and the control joins that form."],
+["Which input attribute allows more than one file to be selected at once?", ["many", "multi='true'", "multiple", "files"], 2, "multiple works on file inputs and also on email inputs."],
+["Which element marks a date or time in a format machines can read?", ["`<date>`", "`<clock>`", "`<datetime>`", "`<time>`"], 3, "`<time datetime='2026-08-21'>` pairs readable text with a machine-readable value."],
+["Which attribute on `<html>` tells browsers and screen readers which language the page uses?", ["lang", "locale", "language", "xml:lang"], 0, "lang='en' guides pronunciation, hyphenation and automatic translation."],
+["Which of these is a void element that must never be given a closing tag?", ["`<div>`", "`<span>`", "`<p>`", "`<img>`"], 3, "Void elements such as `<img>`, `<br>`, `<hr>`, `<input>` and `<meta>` hold no content."],
+["Which attribute on `<script>` lets the browser check that a file loaded from a CDN has not been altered?", ["integrity", "verify", "checksum", "hash"], 0, "Subresource Integrity compares a hash of the file and blocks it if the hash does not match."],
+["Which statement about `<div>` and `<section>` is correct?", ["They are identical in every way", "`<section>` carries meaning about the content; `<div>` carries none", "`<div>` is not valid in HTML5", "`<section>` may only be used once per page"], 1, "Use `<section>` when the grouping is thematic; reach for `<div>` only when you need a styling hook."],
+["In your source file you type three spaces between two words inside a `<p>`. What does the browser display?", ["The three spaces exactly as typed", "An error in the console", "A single space between the words", "The two words on separate lines"], 2, "HTML collapses a run of whitespace into one space unless `<pre>` or CSS white-space says otherwise."],
+];
+
+const TOTAL      = QUESTIONS.length;
+const PASS_MARK  = 40;
+const DURATION   = 30 * 60;          // seconds
+const KEYS       = ["A","B","C","D"];
+
+/* ================= state ================= */
+let order=[], answers=[], flags=new Set(), cur=0;
+let endAt=0, tick=null, submitted=false, autoSubmitted=false, filter="all";
+
+/* ================= helpers ================= */
+const $  = id => document.getElementById(id);
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+/* `code` inside question text renders as inline code */
+const fmt = s => esc(s).replace(/`([^`]+)`/g,'<code>$1</code>');
+const mmss = t => String(Math.floor(t/60)).padStart(2,"0")+":"+String(t%60).padStart(2,"0");
+const level = i => i < 34 ? "easy" : (i < 70 ? "medium" : "hard");
+
+/* ================= start ================= */
+function start(){
+  order = QUESTIONS.map((_,i)=>i);
+  if($("shuffle").checked){
+    for(let i=order.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [order[i],order[j]] = [order[j],order[i]];
+    }
+  }
+  answers = new Array(TOTAL).fill(null);
+  flags = new Set();
+  cur = 0; submitted = false; autoSubmitted = false; filter = "all";
+
+  buildGrid();
+  render();
+  $("screenStart").hidden = true;
+  $("screenResult").hidden = true;
+  $("screenExam").hidden = false;
+  $("bar").hidden = false;
+  window.scrollTo(0,0);
+
+  endAt = Date.now() + DURATION*1000;
+  clearInterval(tick);
+  tick = setInterval(clock, 250);
+  clock();
+  window.addEventListener("beforeunload", guard);
+}
+
+function guard(e){ if(!submitted){ e.preventDefault(); e.returnValue = ""; } }
+
+/* ================= clock ================= */
+function clock(){
+  const left = Math.max(0, Math.round((endAt - Date.now())/1000));
+  $("clockVal").textContent = '"'+mmss(left)+'"';
+  const c = $("clock");
+  c.classList.toggle("warn", left <= 300 && left > 60);
+  c.classList.toggle("crit", left <= 60);
+  if(left === 0 && !submitted){ autoSubmitted = true; finish(); }
+}
+
+/* ================= question view ================= */
+function render(){
+  const qi = order[cur], q = QUESTIONS[qi];
+  $("qNum").textContent = cur + 1;
+  $("qLevel").innerHTML = '<span class="p">&lt;</span><span class="t">question</span> <span class="a">level</span><span class="p">=</span><span class="s">"'+level(qi)+'"</span><span class="p">&gt;</span>';
+  $("qText").innerHTML = fmt(q[0]);
+
+  const box = $("qOpts");
+  box.innerHTML = "";
+  q[1].forEach((opt, k) => {
+    const lab = document.createElement("label");
+    lab.className = "opt" + (answers[qi] === k ? " on" : "");
+    lab.innerHTML =
+      '<input type="radio" name="q" value="'+k+'"'+(answers[qi]===k?" checked":"")+'>' +
+      '<span class="key">'+KEYS[k]+'</span><span class="txt">'+fmt(opt)+'</span>';
+    lab.querySelector("input").addEventListener("change", ()=>choose(k));
+    box.appendChild(lab);
+  });
+
+  $("btnFlag").setAttribute("aria-pressed", flags.has(qi) ? "true" : "false");
+  $("btnPrev").disabled = cur === 0;
+  $("btnNext").textContent = cur === TOTAL-1 ? "Last question" : "Next →";
+  $("btnNext").disabled = cur === TOTAL-1;
+  paintGrid();
+  meter();
+}
+
+function choose(k){
+  const qi = order[cur], first = answers[qi] === null;
+  answers[qi] = k;
+  render();
+  if(first && cur < TOTAL-1) setTimeout(()=>go(cur+1), 150);
+}
+
+function go(i){
+  cur = Math.min(TOTAL-1, Math.max(0, i));
+  render();
+}
+
+function meter(){
+  const n = answers.filter(a => a !== null).length;
+  $("tally").textContent = n + " answered";
+  $("rail").style.width = (n/TOTAL*100) + "%";
+}
+
+/* ================= palette ================= */
+function buildGrid(){
+  const g = $("grid");
+  g.innerHTML = "";
+  for(let i=0;i<TOTAL;i++){
+    const b = document.createElement("button");
+    b.className = "cell";
+    b.textContent = i+1;
+    b.addEventListener("click", ()=>go(i));
+    g.appendChild(b);
+  }
+}
+function paintGrid(){
+  const cells = $("grid").children;
+  for(let i=0;i<TOTAL;i++){
+    const qi = order[i], c = cells[i];
+    c.classList.toggle("done", answers[qi] !== null);
+    c.classList.toggle("flag", flags.has(qi));
+    c.classList.toggle("here", i === cur);
+  }
+}
+
+/* ================= submit ================= */
+function askSubmit(){
+  const left = answers.filter(a => a === null).length;
+  const secs = Math.max(0, Math.round((endAt - Date.now())/1000));
+  $("modalBody").textContent = left === 0
+    ? "All 100 questions are answered. You still have " + mmss(secs) + " on the clock."
+    : left + (left === 1 ? " question is" : " questions are") + " still blank — they will be marked zero. " + mmss(secs) + " left on the clock.";
+  $("modal").hidden = false;
+  $("btnConfirm").focus();
+}
+
+function finish(){
+  submitted = true;
+  clearInterval(tick);
+  window.removeEventListener("beforeunload", guard);
+  $("modal").hidden = true;
+
+  let right=0, wrong=0, skip=0;
+  QUESTIONS.forEach((q,i)=>{
+    if(answers[i] === null) skip++;
+    else if(answers[i] === q[2]) right++;
+    else wrong++;
+  });
+
+  const used = DURATION - Math.max(0, Math.round((endAt - Date.now())/1000));
+  const pass = right >= PASS_MARK;
+  const name = $("who").value.trim();
+
+  $("score").textContent = right;
+  $("sCorrect").textContent = right;
+  $("sWrong").textContent = wrong;
+  $("sSkip").textContent = skip;
+  $("sPct").textContent = Math.round(right/TOTAL*100) + "%";
+  $("sTime").textContent = mmss(Math.min(DURATION, Math.max(0, used)));
+
+  const v = $("verdict");
+  v.className = "verdict " + (pass ? "pass" : "fail");
+  v.textContent = pass ? "PASSED" : "FAILED";
+  $("resultLine").textContent =
+    (name ? name + " scored " : "You scored ") + right + " out of 100. " +
+    (pass ? "The pass mark is 40, so this is a pass."
+          : "The pass mark is 40, so this is a fail — " + (PASS_MARK - right) + " more mark" + (PASS_MARK-right===1?"":"s") + " were needed.");
+
+  $("autoNote").hidden = !autoSubmitted;
+  buildReview();
+  $("screenExam").hidden = true;
+  $("bar").hidden = true;
+  $("screenResult").hidden = false;
+  window.scrollTo(0,0);
+}
+
+/* ================= review ================= */
+function buildReview(){
+  const box = $("review");
+  box.innerHTML = "";
+  order.forEach((qi, pos) => {
+    const q = QUESTIONS[qi], mine = answers[qi], correct = q[2];
+    const status = mine === null ? "skip" : (mine === correct ? "right" : "wrong");
+    if(filter !== "all" && filter !== status) return;
+
+    const card = document.createElement("article");
+    card.className = "rev";
+    const badge = status === "right" ? '<span class="badge ok">+1 mark</span>'
+                : status === "wrong" ? '<span class="badge no">0 marks</span>'
+                : '<span class="badge skip">not attempted</span>';
+
+    let list = "";
+    q[1].forEach((opt,k)=>{
+      const isC = k === correct, isM = k === mine;
+      const cls = isC ? "right" : (isM ? "chosen" : "");
+      const mk  = isC ? "✓" : (isM ? "✗" : KEYS[k]);
+      list += '<li class="'+cls+'"><span class="mk">'+mk+'</span><span>'+fmt(opt)+
+              (isM && !isC ? ' <em>— your answer</em>' : '') +
+              (isC ? ' <em>— correct answer</em>' : '') + '</span></li>';
+    });
+
+    card.innerHTML =
+      '<div class="head"><span class="num">Q'+(pos+1)+'</span>'+badge+'</div>' +
+      '<p class="q">'+fmt(q[0])+'</p>' +
+      '<ul>'+list+'</ul>' +
+      '<p class="why">'+fmt(q[3])+'</p>';
+    box.appendChild(card);
+  });
+  if(!box.children.length){
+    box.innerHTML = '<div class="rev"><p class="q">Nothing in this group.</p></div>';
+  }
+}
+
+/* ================= events ================= */
+$("btnStart").addEventListener("click", start);
+$("btnPrev").addEventListener("click", ()=>go(cur-1));
+$("btnNext").addEventListener("click", ()=>go(cur+1));
+$("btnFlag").addEventListener("click", ()=>{
+  const qi = order[cur];
+  flags.has(qi) ? flags.delete(qi) : flags.add(qi);
+  render();
+});
+$("btnSubmitTop").addEventListener("click", askSubmit);
+$("btnCancel").addEventListener("click", ()=>{ $("modal").hidden = true; });
+$("btnConfirm").addEventListener("click", finish);
+$("btnTop").addEventListener("click", ()=>window.scrollTo({top:0,behavior:"smooth"}));
+$("btnRetake").addEventListener("click", ()=>{
+  $("screenResult").hidden = true;
+  $("screenStart").hidden = false;
+  window.scrollTo(0,0);
+});
+$("filters").addEventListener("click", e=>{
+  const b = e.target.closest(".chip");
+  if(!b) return;
+  filter = b.dataset.f;
+  [...$("filters").children].forEach(c => c.setAttribute("aria-pressed", c === b ? "true" : "false"));
+  buildReview();
+});
+
+document.addEventListener("keydown", e=>{
+  if($("screenExam").hidden || submitted) return;
+  if(!$("modal").hidden){ if(e.key === "Escape") $("modal").hidden = true; return; }
+  if(e.target.tagName === "INPUT" && e.target.type === "text") return;
+  const k = e.key.toUpperCase();
+  if(KEYS.includes(k)) { choose(KEYS.indexOf(k)); e.preventDefault(); }
+  else if(k >= "1" && k <= "4") { choose(+k - 1); e.preventDefault(); }
+  else if(e.key === "ArrowRight") go(cur+1);
+  else if(e.key === "ArrowLeft") go(cur-1);
+  else if(k === "F") $("btnFlag").click();
+});
+})();
+</script>
+</body>
+</html>
